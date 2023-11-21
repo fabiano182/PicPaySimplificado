@@ -13,7 +13,7 @@ data class CustomerModel(
 
     @Column var nomeCompleto: String,
 
-    @Column(unique = true) var registroGoverno: Int,
+    @Column(unique = true) var registroGoverno: String,
 
     @Column(unique = true) var email: String,
 
@@ -21,5 +21,10 @@ data class CustomerModel(
 
     @Column var saldo: Float
 ) {
+
+    fun ePJ() = this.registroGoverno.length == 14
+
+
+    fun ePF() = this.registroGoverno.length == 11
 
 }

@@ -5,7 +5,7 @@ data class PutCustomerRequest(
 
     var nomeCompleto: String,
 
-    var registroGoverno: Int,
+    var registroGoverno: String,
 
     var email: String,
 

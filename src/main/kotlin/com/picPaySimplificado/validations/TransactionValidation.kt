@@ -5,14 +5,16 @@ import com.picPaySimplificado.model.aprovarTransacaoModel
 import com.picPaySimplificado.model.transactionModel
 import com.picPaySimplificado.repository.customerRepository
 import com.picPaySimplificado.repository.transactionRepository
+import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate as RestTemplate
 
-
-class checkout(
+@Service
+class TransactionValidation(
     private val customerRepository: customerRepository
 ) {
 
-    fun ChecarExistencia(transaction: transactionModel): Boolean {
+    fun checarExistencia(transaction: transactionModel): Boolean {
         val enviaCheck: Boolean = customerRepository.existsById(transaction.envia)
         val recebeCheck: Boolean = customerRepository.existsById(transaction.recebe)
 
@@ -25,21 +27,26 @@ class checkout(
 
     fun checarRegistroGoverno(transaction: transactionModel): Boolean {
 
-        val registroEnvia = customerRepository.findById(transaction.envia)
-        val registroRecebe = customerRepository.findById(transaction.recebe)
+        val client = customerRepository.findById(transaction.envia)
+        val vendedor = customerRepository.findById(transaction.recebe)
 
-        val registroGovernoEnvia = (registroEnvia as CustomerModel).registroGoverno.toString().length
-        val registroGovernoRecebe = (registroRecebe as CustomerModel).registroGoverno.toString().length
-
-        when (registroGovernoEnvia) {
-            11 ->when (registroGovernoRecebe){
-                11 -> return false
-                14 -> return true
-                else -> throw Exception()
-            }
-            14-> return false
-            else -> throw Exception()
+        if (client.get().ePF() && vendedor.get().ePJ()) {
+            return true
         }
+        throw Exception()
+
+//        val registroGovernoEnvia = (registroEnvia as CustomerModel).registroGoverno.toString().length
+//        val registroGovernoRecebe = (registroRecebe as CustomerModel).registroGoverno.toString().length
+//
+//        when (registroGovernoEnvia) {
+//            11 ->when (registroGovernoRecebe){
+//                11 -> return false
+//                14 -> return true
+//                else -> throw Exception()
+//            }
+//            14-> return false
+//            else -> throw Exception()
+//        }
     }
 
     fun checarSaldo(transaction: transactionModel): Boolean {
