@@ -4,12 +4,12 @@ package com.picPaySimplificado.service
 import jakarta.transaction.Transactional
 import com.picPaySimplificado.model.CustomerModel
 import org.springframework.stereotype.Service
-import com.picPaySimplificado.repository.customerRepository
+import com.picPaySimplificado.repository.CustomerRepository
 import kotlin.jvm.optionals.toList
 
 @Service
 @Transactional
-class customerService(private val repository: customerRepository) {
+class CustomerService(private val repository: CustomerRepository) {
 
     fun getAll(): List<CustomerModel> {
         return repository.findAll().toList()

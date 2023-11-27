@@ -1,10 +1,10 @@
 package extensions.extensions
 
 import com.picPaySimplificado.model.CustomerModel
-import com.picPaySimplificado.model.transactionModel
+import com.picPaySimplificado.model.TransactionModel
 import com.picPaySimplificado.request.PostCustomerRequest
 import com.picPaySimplificado.request.PutCustomerRequest
-import com.picPaySimplificado.request.transactionRequest
+import com.picPaySimplificado.request.TransactionRequest
 
 fun PostCustomerRequest.toCustomerModel(): CustomerModel {
     return CustomerModel(
@@ -38,8 +38,8 @@ fun PutCustomerRequest.toCustomerModel(customer: PutCustomerRequest): CustomerMo
         )
 }
 
-fun transactionRequest.toTransactionModel(transaction: transactionRequest): transactionModel {
-    return transactionModel(
+fun TransactionRequest.toTransactionModel(transaction: TransactionRequest): TransactionModel {
+    return TransactionModel(
         envia = this.envia,
 
         recebe = this.recebe,

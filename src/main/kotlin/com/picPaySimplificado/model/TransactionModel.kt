@@ -6,11 +6,9 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.Date
 
 @Entity(name = "transaction_history")
-data class transactionModel(
+data class TransactionModel(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var ID: Int? = null,
 
     @Column var envia: Int,

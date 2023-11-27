@@ -5,12 +5,12 @@ import com.picPaySimplificado.model.CustomerModel
 import org.springframework.web.bind.annotation.*
 import com.picPaySimplificado.request.PostCustomerRequest
 import com.picPaySimplificado.request.PutCustomerRequest
-import com.picPaySimplificado.service.customerService
+import com.picPaySimplificado.service.CustomerService
 
 @RestController
 @RequestMapping("customer")
-class customerController(
-    val service: customerService
+class CustomerController(
+    val service: CustomerService
 ) {
     @GetMapping("teste")
     fun teste(): String {

@@ -1,9 +1,8 @@
 package com.picPaySimplificado.service
 
-import com.picPaySimplificado.model.CustomerModel
-import com.picPaySimplificado.model.transactionModel
-import com.picPaySimplificado.repository.customerRepository
-import com.picPaySimplificado.repository.transactionRepository
+import com.picPaySimplificado.model.TransactionModel
+import com.picPaySimplificado.repository.CustomerRepository
+import com.picPaySimplificado.repository.TransactionRepository
 import com.picPaySimplificado.validations.TransactionValidation
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -12,35 +11,41 @@ import java.time.LocalDate
 @Service
 @Transactional
 class TransactionService(
-    private val transactionRepository: transactionRepository,
+    private val transactionRepository: TransactionRepository,
     private val transactionValidation: TransactionValidation,
-    private val customerRepository: customerRepository
+    private val customerRepository: CustomerRepository
 ) {
 
-    fun transferencia(transaction: transactionModel) {
+    fun transferencia(transaction: TransactionModel) {
 
         val validar1: Boolean = transactionValidation.checarExistencia(transaction)
         val validar2: Boolean = transactionValidation.checarRegistroGoverno(transaction)
         val validar3: Boolean = transactionValidation.checarSaldo(transaction)
         val validar4: Boolean = transactionValidation.checarApiAprovacao()
 
-        val GetsubtrairValor = customerRepository.findById(transaction.envia)
-        val subtrairValor = (GetsubtrairValor as CustomerModel)
+        val GetsubtrairValor = customerRepository.findById(transaction.envia).get()
+        val subtrairValor = GetsubtrairValor
 
-        val GetsomarValor = customerRepository.findById(transaction.recebe)
-        val somarValor = (GetsomarValor as CustomerModel)
+        val GetsomarValor = customerRepository.findById(transaction.recebe).get()
+        val somarValor = GetsomarValor
 
 
         val dataTransacao: LocalDate? = java.time.LocalDate.now()
-        val postHistory = transactionModel(
+        val postHistory = TransactionModel(
             envia = transaction.envia,
             recebe = transaction.recebe,
             valor = transaction.valor,
             date = dataTransacao,
         )
 
+//        if (!validar1) {
+//            return
+//        }
+
+
         if (validar1 && validar2 && validar3 && validar4) {
-            subtrairValor.saldo = transaction.valor - subtrairValor.saldo
+            subtrairValor.saldo = subtrairValor.saldo - transaction.valor
+
             customerRepository.save(subtrairValor)
 
             somarValor.saldo = transaction.valor + somarValor.saldo
@@ -48,8 +53,11 @@ class TransactionService(
 
             transactionRepository.save(postHistory)
         } else {
-            throw Exception()
+            return
         }
+    }
+    fun getAll(): List<TransactionModel> {
+        return transactionRepository.findAll().toList()
     }
 
 }
