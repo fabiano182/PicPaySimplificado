@@ -1,6 +1,6 @@
 package com.picPaySimplificado.request
 
-data class transactionRequest(
+data class TransactionRequest(
     val envia: Int,
 
     val recebe: Int,

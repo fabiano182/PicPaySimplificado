@@ -24,7 +24,6 @@ data class CustomerModel(
 
     fun ePJ() = this.registroGoverno.length == 14
 
-
     fun ePF() = this.registroGoverno.length == 11
 
 }

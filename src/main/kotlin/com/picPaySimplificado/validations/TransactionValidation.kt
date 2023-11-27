@@ -1,39 +1,40 @@
 package com.picPaySimplificado.validations
 
 import com.picPaySimplificado.model.CustomerModel
-import com.picPaySimplificado.model.aprovarTransacaoModel
-import com.picPaySimplificado.model.transactionModel
-import com.picPaySimplificado.repository.customerRepository
-import com.picPaySimplificado.repository.transactionRepository
-import org.springframework.stereotype.Component
+import com.picPaySimplificado.model.AprovarTransacaoModel
+import com.picPaySimplificado.model.TransactionModel
+import com.picPaySimplificado.repository.CustomerRepository
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate as RestTemplate
+import org.springframework.web.client.RestTemplate
 
 @Service
 class TransactionValidation(
-    private val customerRepository: customerRepository
+    private val customerRepository: CustomerRepository
 ) {
 
-    fun checarExistencia(transaction: transactionModel): Boolean {
+    fun checarExistencia(transaction: TransactionModel): Boolean {
         val enviaCheck: Boolean = customerRepository.existsById(transaction.envia)
         val recebeCheck: Boolean = customerRepository.existsById(transaction.recebe)
 
         if (enviaCheck && recebeCheck) {
+            println("morreu aqui")
             return true
         } else {
             return false
         }
     }
 
-    fun checarRegistroGoverno(transaction: transactionModel): Boolean {
+    fun checarRegistroGoverno(transaction: TransactionModel): Boolean {
 
         val client = customerRepository.findById(transaction.envia)
         val vendedor = customerRepository.findById(transaction.recebe)
 
         if (client.get().ePF() && vendedor.get().ePJ()) {
+            println("rolou")
             return true
         }
-        throw Exception()
+        println("não rolou")
+        return false
 
 //        val registroGovernoEnvia = (registroEnvia as CustomerModel).registroGoverno.toString().length
 //        val registroGovernoRecebe = (registroRecebe as CustomerModel).registroGoverno.toString().length
@@ -49,31 +50,31 @@ class TransactionValidation(
 //        }
     }
 
-    fun checarSaldo(transaction: transactionModel): Boolean {
+    fun checarSaldo(transaction: TransactionModel): Boolean {
         val PegarsaldoEnvia = customerRepository.findById(transaction.envia)
 
-        val saldoEnvia = (PegarsaldoEnvia as CustomerModel).saldo
+        val saldoEnvia = (PegarsaldoEnvia.get() as CustomerModel).saldo
 
-        if (transaction.valor >= saldoEnvia) {
+        if (transaction.valor <= saldoEnvia) {
             return true
-        } else {
-            throw Exception()
-            return false
         }
+        return false
     }
 
     fun checarApiAprovacao(): Boolean {
         val restTemplate = RestTemplate()
 
-        val parametroTransacao = restTemplate.getForObject("https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc", aprovarTransacaoModel::class.java)
+        val parametroTransacao = restTemplate.getForObject(
+            "https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc",
+            AprovarTransacaoModel::class.java
+        )
 
         if (parametroTransacao != null) {
-            when(parametroTransacao.message){
+            when (parametroTransacao.message) {
                 "Autorizado" -> return true
                 else -> return false
             }
-        }else{
-            throw Exception()
+        } else {
             return false
         }
     }

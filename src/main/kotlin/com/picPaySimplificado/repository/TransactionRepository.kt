@@ -1,9 +1,9 @@
 package com.picPaySimplificado.repository
 
-import com.picPaySimplificado.model.transactionModel
+import com.picPaySimplificado.model.TransactionModel
 import org.springframework.data.repository.CrudRepository
 
-interface transactionRepository: CrudRepository<transactionModel, Int> {
+interface TransactionRepository: CrudRepository<TransactionModel, Int> {
     fun existsByEnvia (envia: Int): Boolean
     fun existsByRecebe (recebe: Int): Boolean
 }
