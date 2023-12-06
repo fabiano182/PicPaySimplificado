@@ -21,5 +21,4 @@ CREATE TABLE transaction_history
 
 ALTER TABLE transaction_history
     ADD CONSTRAINT FK_transaction_history_2
-        foreign key (envia, recebe)
-            references customer (id, id);
+        foreign key (envia, recebe) references customer (id, id);
