@@ -1,4 +1,4 @@
-package com.picPaySimplificado.request
+package com.picPaySimplificado.controller.request
 
 
 data class PutCustomerRequest(

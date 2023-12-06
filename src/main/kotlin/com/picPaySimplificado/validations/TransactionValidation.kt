@@ -1,9 +1,11 @@
 package com.picPaySimplificado.validations
 
-import com.picPaySimplificado.model.CustomerModel
 import com.picPaySimplificado.model.AprovarTransacaoModel
+import com.picPaySimplificado.model.ConfirmarEnvioModel
+import com.picPaySimplificado.model.CustomerModel
 import com.picPaySimplificado.model.TransactionModel
 import com.picPaySimplificado.repository.CustomerRepository
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
@@ -17,7 +19,6 @@ class TransactionValidation(
         val recebeCheck: Boolean = customerRepository.existsById(transaction.recebe)
 
         if (enviaCheck && recebeCheck) {
-            println("morreu aqui")
             return true
         } else {
             return false
@@ -30,24 +31,9 @@ class TransactionValidation(
         val vendedor = customerRepository.findById(transaction.recebe)
 
         if (client.get().ePF() && vendedor.get().ePJ()) {
-            println("rolou")
             return true
         }
-        println("não rolou")
         return false
-
-//        val registroGovernoEnvia = (registroEnvia as CustomerModel).registroGoverno.toString().length
-//        val registroGovernoRecebe = (registroRecebe as CustomerModel).registroGoverno.toString().length
-//
-//        when (registroGovernoEnvia) {
-//            11 ->when (registroGovernoRecebe){
-//                11 -> return false
-//                14 -> return true
-//                else -> throw Exception()
-//            }
-//            14-> return false
-//            else -> throw Exception()
-//        }
     }
 
     fun checarSaldo(transaction: TransactionModel): Boolean {
@@ -65,8 +51,7 @@ class TransactionValidation(
         val restTemplate = RestTemplate()
 
         val parametroTransacao = restTemplate.getForObject(
-            "https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc",
-            AprovarTransacaoModel::class.java
+            "https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc", AprovarTransacaoModel::class.java
         )
 
         if (parametroTransacao != null) {
@@ -74,8 +59,20 @@ class TransactionValidation(
                 "Autorizado" -> return true
                 else -> return false
             }
-        } else {
-            return false
         }
+        return false
+    }
+
+    fun postForEmailApi(transactionModel: TransactionModel): Boolean {
+        val restTemplate = RestTemplate()
+
+        // Fazer com que ele retorne um boolean
+        val parametroTransacao = restTemplate.postForEntity(
+            "https://run.mocky.falseio/v3/5794d450-d2e2-4412-8131-73d0293ac1cc", transactionModel, ConfirmarEnvioModel::class.java
+        )
+
+        return true
+
+
     }
 }

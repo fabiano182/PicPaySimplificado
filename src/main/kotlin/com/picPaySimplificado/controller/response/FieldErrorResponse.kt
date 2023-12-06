@@ -1,5 +1,6 @@
 package com.picPaySimplificado.controller.response
 
-class FieldErrorResponse {
-
-}
+data class FieldErrorResponse(
+    var message: String,
+    var field: String
+)

@@ -2,9 +2,9 @@ package extensions.extensions
 
 import com.picPaySimplificado.model.CustomerModel
 import com.picPaySimplificado.model.TransactionModel
-import com.picPaySimplificado.request.PostCustomerRequest
-import com.picPaySimplificado.request.PutCustomerRequest
-import com.picPaySimplificado.request.TransactionRequest
+import com.picPaySimplificado.controller.request.PostCustomerRequest
+import com.picPaySimplificado.controller.request.PutCustomerRequest
+import com.picPaySimplificado.controller.request.TransactionRequest
 
 fun PostCustomerRequest.toCustomerModel(): CustomerModel {
     return CustomerModel(

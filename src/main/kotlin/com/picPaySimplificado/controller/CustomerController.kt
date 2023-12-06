@@ -3,11 +3,14 @@ package com.picPaySimplificado.controller
 import extensions.extensions.toCustomerModel
 import com.picPaySimplificado.model.CustomerModel
 import org.springframework.web.bind.annotation.*
-import com.picPaySimplificado.request.PostCustomerRequest
-import com.picPaySimplificado.request.PutCustomerRequest
+import com.picPaySimplificado.controller.request.PostCustomerRequest
+import com.picPaySimplificado.controller.request.PutCustomerRequest
 import com.picPaySimplificado.service.CustomerService
+import jakarta.transaction.Transactional
+import jakarta.validation.Valid
 
 @RestController
+@Transactional
 @RequestMapping("customer")
 class CustomerController(
     val service: CustomerService
@@ -23,12 +26,12 @@ class CustomerController(
     }
 
     @GetMapping("/{id}")
-    fun filterCustomer(@RequestBody id: Int): CustomerModel {
+    fun filterCustomer(@PathVariable id: Int): CustomerModel {
         return service.findCustomer(id)
     }
 
     @PostMapping("/cadastrar")
-    fun create(@RequestBody customer: PostCustomerRequest) {
+    fun create(@RequestBody @Valid customer: PostCustomerRequest) {
         service.create(customer.toCustomerModel())
     }
 
@@ -37,7 +40,7 @@ class CustomerController(
         service.update(customer.toCustomerModel(customer))
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Int){
         service.delete(id)
     }

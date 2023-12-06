@@ -1,4 +1,5 @@
 package com.picPaySimplificado.exception
 
-class NotFoundException {
+class NotFoundException(override val message: String, val errorCode: String): Exception() {
+
 }
