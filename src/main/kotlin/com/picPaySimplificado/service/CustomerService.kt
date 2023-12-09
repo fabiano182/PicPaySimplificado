@@ -1,6 +1,7 @@
 package com.picPaySimplificado.service
 
 
+import com.picPaySimplificado.enums.Errors
 import com.picPaySimplificado.model.CustomerModel
 import com.picPaySimplificado.repository.CustomerRepository
 import jakarta.transaction.Transactional
@@ -20,12 +21,13 @@ class CustomerService(private val repository: CustomerRepository) {
     }
 
     fun findCustomer(id: Int): CustomerModel {
-        return repository.findById(id).orElseThrow{
-            com.picPaySimplificado.exception.NotFoundException(
-                "Customer ${id} não existe",
-                "0001"
-            )
-        }
+        return repository.findById(id)
+            .orElseThrow {
+                com.picPaySimplificado.exception.NotFoundException(
+                    Errors.CO001.message.format(id),
+                    Errors.CO001.code
+                )
+            }
     }
 
 

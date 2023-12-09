@@ -18,9 +18,13 @@ class TransactionController(val transactionService: TransactionService) {
         transactionService.transferencia(transaction.toTransactionModel(transaction))
     }
 
-    @GetMapping()
+    @GetMapping
     fun getAll(): List<TransactionModel> {
         return transactionService.getAll()
     }
 
+    @GetMapping("/{id}")
+    fun getById(id: Int): TransactionModel {
+        return transactionService.getTransaction(id)
+    }
 }

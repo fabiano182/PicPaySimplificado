@@ -1,5 +1,7 @@
 package com.picPaySimplificado.service
 
+import com.picPaySimplificado.enums.Errors
+import com.picPaySimplificado.exception.NotFoundException
 import com.picPaySimplificado.model.ConfirmarEnvioModel
 import com.picPaySimplificado.model.TransactionModel
 import com.picPaySimplificado.repository.CustomerRepository
@@ -63,4 +65,10 @@ class TransactionService(
         return transactionRepository.findAll().toList()
     }
 
+    fun getTransaction(id: Int): TransactionModel {
+        return transactionRepository.findById(id).orElseThrow{
+            NotFoundException(Errors.TO001.message.format(id), Errors.TO001.code)
+        }
+
+    }
 }

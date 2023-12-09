@@ -1,5 +1,7 @@
 package com.picPaySimplificado.validations
 
+import com.picPaySimplificado.enums.Errors
+import com.picPaySimplificado.exception.NotFoundException
 import com.picPaySimplificado.model.AprovarTransacaoModel
 import com.picPaySimplificado.model.ConfirmarEnvioModel
 import com.picPaySimplificado.model.CustomerModel
@@ -65,14 +67,15 @@ class TransactionValidation(
 
     fun postForEmailApi(transactionModel: TransactionModel): Boolean {
         val restTemplate = RestTemplate()
-
+        var id: Int = 10
         // Fazer com que ele retorne um boolean
         val parametroTransacao = restTemplate.postForEntity(
             "https://run.mocky.falseio/v3/5794d450-d2e2-4412-8131-73d0293ac1cc", transactionModel, ConfirmarEnvioModel::class.java
         )
-
-        return true
-
-
+        if(parametroTransacao != null){
+            return true
+        }
+        throw NotFoundException(Errors.CO001.message.format(id), Errors.CO001.code)  //teste
+        return false
     }
 }
