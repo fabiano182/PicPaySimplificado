@@ -22,4 +22,16 @@ class ControllerAdvice {
         )
         return ResponseEntity(erro, HttpStatus.NOT_FOUND)
     }
+
+    @ExceptionHandler(BadRequestException::class)
+    fun handleBadRequestException(ex: BadRequestException, request: WebRequest): ResponseEntity<ErrorResponse> {
+        val erro = ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            ex.message,
+            ex.errorCode,
+            null
+        )
+        return ResponseEntity(erro, HttpStatus.BAD_REQUEST)
+    }
+
 }

@@ -29,9 +29,9 @@ dependencies {
 	implementation("io.springfox:springfox-swagger-ui:3.0.0")
 
 	// Swagger
-	implementation("org.springdoc:springdoc-openapi-data-rest:1.6.0")
-	implementation("org.springdoc:springdoc-openapi-ui:1.6.0")
-	implementation("org.springdoc:springdoc-openapi-kotlin:1.6.0")
+	implementation("io.springfox:springfox-swagger2:2.9.2")
+	implementation("io.springfox:springfox-swagger-ui:2.9.2")
+	implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 

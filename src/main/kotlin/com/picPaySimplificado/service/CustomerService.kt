@@ -2,10 +2,12 @@ package com.picPaySimplificado.service
 
 
 import com.picPaySimplificado.enums.Errors
+import com.picPaySimplificado.exception.BadRequestException
 import com.picPaySimplificado.model.CustomerModel
 import com.picPaySimplificado.repository.CustomerRepository
 import jakarta.transaction.Transactional
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 
 @Service
@@ -33,14 +35,20 @@ class CustomerService(private val repository: CustomerRepository) {
 
     fun update(customer: CustomerModel) {
         if (!repository.existsById(customer.id!!)) {
-            throw Exception()
+            throw BadRequestException(
+                Errors.CO002.message.format(customer.id),
+                Errors.CO002.code
+            )
         }
         repository.save(customer)
     }
 
     fun delete(id: Int) {
         if (!repository.existsById(id)) {
-            throw Exception()
+            throw BadRequestException(
+                Errors.CO003.message.format(id),
+                Errors.CO003.code
+            )
         }
         repository.deleteById(id)
     }
