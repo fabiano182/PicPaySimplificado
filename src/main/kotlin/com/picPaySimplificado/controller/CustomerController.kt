@@ -16,7 +16,7 @@ class CustomerController(
     val service: CustomerService
 ) {
     @GetMapping("teste")
-    fun teste(): String {
+    fun test(): String {
         return "olá"
     }
 

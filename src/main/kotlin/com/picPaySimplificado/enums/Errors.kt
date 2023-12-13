@@ -6,7 +6,5 @@ enum class Errors(val code: String, val message: String) {
     CO002("CO-002", "Não foi possivel atualizar o Customer [%s]."),
     CO003("CO-003", "Não foi possivel deletar o customer [%s]."),
     //Transaction
-    TO001("TO-001", "Customer [%s] não existe ou não é lojista."),
-    TO002("TO-002", "Customer [%s] não existe ou não é lojista."),
-    TO003("TO-003", "Customer [%s] não existe ou não é lojista."),
+    TO001("TO-001", "Customer [%s] não existe ou não é lojista.")
 }

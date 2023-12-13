@@ -6,8 +6,6 @@ import com.picPaySimplificado.exception.BadRequestException
 import com.picPaySimplificado.model.CustomerModel
 import com.picPaySimplificado.repository.CustomerRepository
 import jakarta.transaction.Transactional
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 
 @Service
