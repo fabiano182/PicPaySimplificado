@@ -2,13 +2,11 @@ package com.picPaySimplificado.service
 
 import com.picPaySimplificado.enums.Errors
 import com.picPaySimplificado.exception.NotFoundException
-import com.picPaySimplificado.model.ConfirmarEnvioModel
 import com.picPaySimplificado.model.TransactionModel
 import com.picPaySimplificado.repository.CustomerRepository
 import com.picPaySimplificado.repository.TransactionRepository
 import com.picPaySimplificado.validations.TransactionValidation
 import jakarta.transaction.Transactional
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -20,12 +18,12 @@ class TransactionService(
     private val customerRepository: CustomerRepository
 ) {
 
-    fun transferencia(transaction: TransactionModel) {
+    fun transference(transaction: TransactionModel) {
 
-        val validar1: Boolean = transactionValidation.checarExistencia(transaction)
-        val validar2: Boolean = transactionValidation.checarRegistroGoverno(transaction)
-        val validar3: Boolean = transactionValidation.checarSaldo(transaction)
-        val validar4: Boolean = transactionValidation.checarApiAprovacao()
+        val validar1: Boolean = transactionValidation.checkExists(transaction)
+        val validar2: Boolean = transactionValidation.checkRegistroGoverno(transaction)
+        val validar3: Boolean = transactionValidation.checkBalance(transaction)
+        val validar4: Boolean = transactionValidation.checkApprovalApi()
 
         val GetsubtrairValor = customerRepository.findById(transaction.envia).get()
         val subtrairValor = GetsubtrairValor

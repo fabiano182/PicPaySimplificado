@@ -1,5 +1,5 @@
 package com.picPaySimplificado.model
 
-data class ConfirmarEnvioModel(
+data class ConfirmSendModel(
     var message: Boolean
 )

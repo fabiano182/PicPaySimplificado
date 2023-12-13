@@ -6,7 +6,6 @@ import com.picPaySimplificado.service.TransactionService
 import extensions.extensions.toTransactionModel
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("transferencia")
 class TransactionController(val transactionService: TransactionService) {
     @PostMapping
-    fun transferencia(@RequestBody @Valid transaction: TransactionRequest) {
-        transactionService.transferencia(transaction.toTransactionModel(transaction))
+    fun transference(@RequestBody @Valid transaction: TransactionRequest) {
+        transactionService.transference(transaction.toTransactionModel(transaction))
     }
 
     @GetMapping

@@ -1,5 +1,5 @@
 package com.picPaySimplificado.model
 
-data class AprovarTransacaoModel(
+data class ApprovalTransactionModel(
     var message: String
 )
