@@ -1,4 +1,4 @@
-package com.picPaySimplificado.validations
+package com.picPaySimplificado.service.functions
 
 import com.picPaySimplificado.enums.Errors
 import com.picPaySimplificado.exception.NotFoundException
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
-class TransactionValidation(
+class CheckoutTransference(
     private val customerRepository: CustomerRepository
 ) {
 
