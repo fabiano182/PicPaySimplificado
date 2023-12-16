@@ -5,7 +5,7 @@ import com.picPaySimplificado.exception.NotFoundException
 import com.picPaySimplificado.model.TransactionModel
 import com.picPaySimplificado.repository.CustomerRepository
 import com.picPaySimplificado.repository.TransactionRepository
-import com.picPaySimplificado.validations.TransactionValidation
+import com.picPaySimplificado.service.functions.CheckoutTransference
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -14,16 +14,16 @@ import java.time.LocalDate
 @Transactional
 class TransactionService(
     private val transactionRepository: TransactionRepository,
-    private val transactionValidation: TransactionValidation,
+    private val checkoutTransference: CheckoutTransference,
     private val customerRepository: CustomerRepository
 ) {
 
     fun transference(transaction: TransactionModel) {
 
-        val validar1: Boolean = transactionValidation.checkExists(transaction)
-        val validar2: Boolean = transactionValidation.checkRegistroGoverno(transaction)
-        val validar3: Boolean = transactionValidation.checkBalance(transaction)
-        val validar4: Boolean = transactionValidation.checkApprovalApi()
+        val validar1: Boolean = checkoutTransference.checkExists(transaction)
+        val validar2: Boolean = checkoutTransference.checkRegistroGoverno(transaction)
+        val validar3: Boolean = checkoutTransference.checkBalance(transaction)
+        val validar4: Boolean = checkoutTransference.checkApprovalApi()
 
         val GetsubtrairValor = customerRepository.findById(transaction.envia).get()
         val subtrairValor = GetsubtrairValor

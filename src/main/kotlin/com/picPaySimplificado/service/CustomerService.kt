@@ -17,7 +17,14 @@ class CustomerService(private val repository: CustomerRepository) {
     }
 
     fun create(customer: CustomerModel) {
-        repository.save(customer)
+        when (customer.registroGoverno.length) {
+            11 -> repository.save(customer)
+            14 -> repository.save(customer)
+            else -> throw BadRequestException(
+                Errors.CO004.message,
+                Errors.CO004.code
+            )
+        }
     }
 
     fun findCustomer(id: Int): CustomerModel {
@@ -49,5 +56,14 @@ class CustomerService(private val repository: CustomerRepository) {
             )
         }
         repository.deleteById(id)
+    }
+
+    fun emailAvailable(email: String): Boolean {
+        return !repository.existsByEmail(email)
+
+    }
+
+    fun registroGovernoAvailable(registroGoverno: String): Boolean {
+        return !repository.existsByRegistroGoverno(registroGoverno)
     }
 }
