@@ -1,11 +1,12 @@
 package com.picPaySimplificado.service
 
+import com.picPaySimplificado.client.ConfirmTransferApproval
+import com.picPaySimplificado.client.PostConfirmationTransactionByEmail
 import com.picPaySimplificado.enums.Errors
 import com.picPaySimplificado.exception.NotFoundException
 import com.picPaySimplificado.model.TransactionModel
 import com.picPaySimplificado.repository.CustomerRepository
 import com.picPaySimplificado.repository.TransactionRepository
-import com.picPaySimplificado.service.functions.CheckoutTransference
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -14,24 +15,22 @@ import java.time.LocalDate
 @Transactional
 class TransactionService(
     private val transactionRepository: TransactionRepository,
-    private val checkoutTransference: CheckoutTransference,
-    private val customerRepository: CustomerRepository
+    private val customerService: CustomerService,
+    private val customerRepository: CustomerRepository,
+    private val confirmTransferApproval: ConfirmTransferApproval,
+    private val postConfirmationTransactionByEmail: PostConfirmationTransactionByEmail
+
 ) {
 
     fun transference(transaction: TransactionModel) {
 
-        val validar1: Boolean = checkoutTransference.checkExists(transaction)
-        val validar2: Boolean = checkoutTransference.checkRegistroGoverno(transaction)
-        val validar3: Boolean = checkoutTransference.checkBalance(transaction)
-        val validar4: Boolean = checkoutTransference.checkApprovalApi()
+        val getSenderData = customerService.senderValidate(transaction)  //Erro tratado
+        val getMerchantData = customerService.merchantValidate(transaction) //Erro tratado
 
-        val GetsubtrairValor = customerRepository.findById(transaction.envia).get()
-        val subtrairValor = GetsubtrairValor
+        customerService.checkBalance(transaction.valor, getSenderData.saldo)  //Erro tratado
 
-        val GetsomarValor = customerRepository.findById(transaction.recebe).get()
-        val somarValor = GetsomarValor
-
-//        val teste= transactionValidation.postForEmailApi(transaction)
+        val subtractValueSender = getSenderData
+        val addMerchantValue = getMerchantData
 
         val dataTransacao: LocalDate? = java.time.LocalDate.now()
         val postHistory = TransactionModel(
@@ -41,32 +40,29 @@ class TransactionService(
             date = dataTransacao,
         )
 
-//        if (!validar1) {
-//            return
-//        }
+        if (confirmTransferApproval.getValidateTransferApproval())
+            subtractValueSender.saldo = subtractValueSender.saldo - transaction.valor
 
+            customerRepository.save(subtractValueSender)
 
-        if (validar1 && validar2 && validar3 && validar4) {
-            subtrairValor.saldo = subtrairValor.saldo - transaction.valor
+            addMerchantValue.saldo = transaction.valor + addMerchantValue.saldo
+            customerRepository.save(addMerchantValue)
 
-            customerRepository.save(subtrairValor)
-
-            somarValor.saldo = transaction.valor + somarValor.saldo
-            customerRepository.save(somarValor)
+            postConfirmationTransactionByEmail.sendConfirmationForEmailApi(transaction)
 
             transactionRepository.save(postHistory)
-        } else {
-            return
-        }
     }
+
     fun getAll(): List<TransactionModel> {
         return transactionRepository.findAll().toList()
     }
 
     fun getTransaction(id: Int): TransactionModel {
-        return transactionRepository.findById(id).orElseThrow{
+        return transactionRepository.findById(id).orElseThrow {
             NotFoundException(Errors.TO001.message.format(id), Errors.TO001.code)
         }
 
     }
+
+
 }

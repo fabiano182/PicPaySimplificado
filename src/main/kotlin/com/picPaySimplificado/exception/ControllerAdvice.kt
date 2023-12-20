@@ -4,8 +4,6 @@ package com.picPaySimplificado.exception
 import com.picPaySimplificado.controller.response.ErrorResponse
 import com.picPaySimplificado.controller.response.FieldErrorResponse
 import com.picPaySimplificado.enums.Errors
-import org.springframework.dao.DataIntegrityViolationException
-
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -39,16 +37,29 @@ class ControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException, request: WebRequest): ResponseEntity<ErrorResponse> {
+    fun handleMethodArgumentNotValidException(
+        ex: MethodArgumentNotValidException,
+        request: WebRequest
+    ): ResponseEntity<ErrorResponse> {
         val erro = ErrorResponse(
             HttpStatus.UNPROCESSABLE_ENTITY.value(),
             Errors.OP001.message,
             Errors.OP001.code,
-            ex.bindingResult.fieldErrors.map{
+            ex.bindingResult.fieldErrors.map {
                 FieldErrorResponse(it.defaultMessage ?: "invalid", it.field)
             }
         )
         return ResponseEntity(erro, HttpStatus.UNPROCESSABLE_ENTITY)
     }
 
+    @ExceptionHandler(AcceptButDenied::class)
+    fun handlerAcceptButDenied(ex: AcceptButDenied, request: WebRequest): ResponseEntity<ErrorResponse> {
+        val erro = ErrorResponse(
+            HttpStatus.ACCEPTED.value(),
+            ex.message,
+            ex.errorCode,
+            null
+        )
+        return ResponseEntity(erro, HttpStatus.ACCEPTED)
+    }
 }
