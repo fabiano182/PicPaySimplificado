@@ -6,6 +6,8 @@ import com.picPaySimplificado.service.TransactionService
 import extensions.extensions.toTransactionModel
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -13,11 +15,13 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("transferencia")
 class TransactionController(val transactionService: TransactionService) {
     @PostMapping
+    @CacheEvict(value = ["TransactionList"])
     fun transference(@RequestBody @Valid transaction: TransactionRequest) {
         transactionService.transference(transaction.toTransactionModel(transaction))
     }
 
     @GetMapping
+    @Cacheable("TransactionList")
     fun getAll(): List<TransactionModel> {
         return transactionService.getAll()
     }
