@@ -60,7 +60,7 @@ class CustomerController(
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(value = ["CustomerList"])
-    fun delete(@PathVariable id: Int){
+    fun delete(@PathVariable id: Int) {
         service.delete(id)
     }
 }
