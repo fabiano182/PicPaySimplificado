@@ -9,13 +9,11 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatus.NO_CONTENT
 import java.util.*
 
 
@@ -40,6 +38,40 @@ class CustomerServiceTest() {
         //then
         assertEquals(fakeCustomers, customers)
         verify(exactly = 1) { repository.findAll() }
+    }
+
+    @Test
+    fun `should create customers`() {
+        val id = Random().nextInt()
+        val fakeCustomer = buildCustomer(id = id)
+        val fakeMerchant = buildCustomer(id = id + 123)
+
+        //given
+        every { repository.save(fakeCustomer) } returns fakeCustomer
+        every { repository.save(fakeMerchant) } returns fakeMerchant
+        //when
+        customerService.create(fakeCustomer)
+        customerService.create(fakeMerchant)
+        //then
+        verify(exactly = 1) { repository.save(fakeCustomer) }
+        verify(exactly = 1) { repository.save(fakeMerchant) }
+    }
+
+    @Test
+    fun `should return the specific exception create customers`() {
+        val id = Random().nextInt()
+        val fakeCustomer = buildCustomer(id = id)
+        fakeCustomer.registroGoverno = fakeCustomer.registroGoverno + 1
+
+        //given
+        every { repository.save(fakeCustomer) } returns fakeCustomer
+        //when
+        val error = assertThrows<BadRequestException>{ customerService.create(fakeCustomer) }
+        //then
+
+        assertEquals("Insira um CPF ou um CNPJ", error.message)
+        assertEquals("CO-004", error.errorCode)
+        verify(exactly = 0) { repository.save(any()) }
     }
 
     @Test
@@ -105,16 +137,27 @@ class CustomerServiceTest() {
     }
 
     @Test
-    fun `should create customers`() {
-        val id = Random().nextInt()
-        val fakeCustomer = buildCustomer(id = id)
+    fun `should return true when email available`() {
+        val email = "${Random().nextInt().toString()}@email.com"
 
-        //given
+        every { repository.existsByEmail(email) } returns false
 
-        //when
+        val emailAvailable = customerService.emailAvailable(email)
 
-        //then
+        assertTrue(emailAvailable)
+        verify(exactly = 1) { repository.existsByEmail(email) }
+    }
 
+    @Test
+    fun `should return false when email unavailable`() {
+        val email = "${Random().nextInt().toString()}@email.com"
+
+        every { repository.existsByEmail(email) } returns true
+
+        val emailAvailable = customerService.emailAvailable(email)
+
+        assertFalse(emailAvailable)
+        verify(exactly = 1) { repository.existsByEmail(email) }
     }
 
 
