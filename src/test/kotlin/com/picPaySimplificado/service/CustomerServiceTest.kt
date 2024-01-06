@@ -1,5 +1,6 @@
 package com.picPaySimplificado.service
 
+import com.picPaySimplificado.enums.CustomerStatus
 import com.picPaySimplificado.exception.BadRequestException
 import com.picPaySimplificado.exception.NotFoundException
 import com.picPaySimplificado.model.CustomerModel
@@ -9,6 +10,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import jakarta.persistence.EnumType
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -41,21 +43,34 @@ class CustomerServiceTest() {
     }
 
     @Test
-    fun `should create customers`() {
+    fun `should create customers cpf`() {
         val id = Random().nextInt()
         val fakeCustomer = buildCustomer(id = id)
-        val fakeMerchant = buildCustomer(id = id + 123)
 
         //given
         every { repository.save(fakeCustomer) } returns fakeCustomer
-        every { repository.save(fakeMerchant) } returns fakeMerchant
         //when
         customerService.create(fakeCustomer)
-        customerService.create(fakeMerchant)
+
         //then
         verify(exactly = 1) { repository.save(fakeCustomer) }
-        verify(exactly = 1) { repository.save(fakeMerchant) }
+
     }
+
+    @Test
+    fun `should create customers cnpj`() {
+        val id = Random().nextInt()
+        val fakeMerchant = buildCustomer(id = id + 123)
+
+        //given
+        every { repository.save(fakeMerchant) } returns fakeMerchant
+        //when
+        customerService.create(fakeMerchant)
+        //then
+        verify(exactly = 1) { repository.save(fakeMerchant) }
+
+    }
+
 
     @Test
     fun `should return the specific exception create customers`() {
@@ -66,7 +81,7 @@ class CustomerServiceTest() {
         //given
         every { repository.save(fakeCustomer) } returns fakeCustomer
         //when
-        val error = assertThrows<BadRequestException>{ customerService.create(fakeCustomer) }
+        val error = assertThrows<BadRequestException> { customerService.create(fakeCustomer) }
         //then
 
         assertEquals("Insira um CPF ou um CNPJ", error.message)
@@ -109,12 +124,14 @@ class CustomerServiceTest() {
 
         //given
         every { repository.existsById(id) } returns true
+        every { repository.findById(id).get() } returns fakeCustomer
         every { repository.save(fakeCustomer) } returns fakeCustomer
 
         //when
         customerService.update(fakeCustomer)
         //then
         verify(exactly = 1) { repository.existsById(id) }
+        verify(exactly = 1) { repository.findById(id) }
         verify(exactly = 1) { repository.save(fakeCustomer) }
 
     }
@@ -167,13 +184,15 @@ class CustomerServiceTest() {
         registroGoverno: String = (1..11).joinToString("") { (0..9).random().toString() },
         email: String = "${UUID.randomUUID()}@email.com",
         senha: String = "password",
-        saldo: Float = 500.0F
-    ) = CustomerModel(
+        saldo: Float = 500.0F,
+        status: CustomerStatus = CustomerStatus.ATIVO
+    ): CustomerModel = CustomerModel(
         id = id,
         nomeCompleto = nomeCompleto,
         registroGoverno = registroGoverno,
         email = email,
         senha = senha,
-        saldo = saldo
+        saldo = saldo,
+        status = status
     )
 }

@@ -5,6 +5,7 @@ import com.picPaySimplificado.model.CustomerModel
 import org.springframework.web.bind.annotation.*
 import com.picPaySimplificado.controller.request.PostCustomerRequest
 import com.picPaySimplificado.controller.request.PutCustomerRequest
+import com.picPaySimplificado.enums.CustomerStatus
 import com.picPaySimplificado.service.CustomerService
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
@@ -51,7 +52,8 @@ class CustomerController(
             registroGoverno = putCustomerRequest.registroGoverno,
             email = putCustomerRequest.email,
             senha = putCustomerRequest.senha,
-            saldo = putCustomerRequest.saldo
+            saldo = putCustomerRequest.saldo,
+            status = CustomerStatus.ATIVO
 
         )
         service.update(customer)
