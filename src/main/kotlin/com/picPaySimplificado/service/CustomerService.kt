@@ -1,6 +1,7 @@
 package com.picPaySimplificado.service
 
 
+import com.picPaySimplificado.enums.CustomerStatus
 import com.picPaySimplificado.enums.Errors
 import com.picPaySimplificado.exception.BadRequestException
 import com.picPaySimplificado.model.CustomerModel
@@ -29,10 +30,10 @@ class CustomerService(private val repository: CustomerRepository) {
 
     fun findCustomer(id: Int): CustomerModel {
         return repository.findById(id).orElseThrow {
-                com.picPaySimplificado.exception.NotFoundException(
-                    Errors.CO001.message.format(id), Errors.CO001.code
-                )
-            }
+            com.picPaySimplificado.exception.NotFoundException(
+                Errors.CO001.message.format(id), Errors.CO001.code
+            )
+        }
     }
 
 
@@ -42,6 +43,7 @@ class CustomerService(private val repository: CustomerRepository) {
                 Errors.CO002.message.format(customer.id), Errors.CO002.code
             )
         }
+        customer.status = repository.findById(customer.id!!).get().status
         repository.save(customer)
     }
 
@@ -51,7 +53,10 @@ class CustomerService(private val repository: CustomerRepository) {
                 Errors.CO003.message.format(id), Errors.CO003.code
             )
         }
-        repository.deleteById(id)
+        val customer = repository.findById(id).get()
+
+        customer.status = CustomerStatus.INATIVO
+        repository.save(customer)
     }
 
     fun emailAvailable(email: String): Boolean {
