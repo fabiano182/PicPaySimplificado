@@ -25,12 +25,12 @@ class TransactionService(
     fun transference(transaction: TransactionModel) {
 
         val getSenderData = customerService.senderValidate(transaction)  //Erro tratado
-        val getMerchantData = customerService.merchantValidate(transaction) //Erro tratado
+        val getRecipientData = customerService.recipientValidate(transaction) //Erro tratado
 
         customerService.checkBalance(transaction.valor, getSenderData.saldo)  //Erro tratado
 
         val subtractValueSender = getSenderData
-        val addMerchantValue = getMerchantData
+        val addMerchantValue = getRecipientData
 
         val dataTransacao: LocalDate? = java.time.LocalDate.now()
         val postHistory = TransactionModel(

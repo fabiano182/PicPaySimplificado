@@ -76,30 +76,30 @@ class CustomerService(private val repository: CustomerRepository) {
         val sender = repository.findById(transaction.envia)
 
         if (!senderCheck) return throw BadRequestException(
-            Errors.TO001.message.format(transaction.envia), Errors.TO001.code
+            Errors.TO003.message.format(transaction.envia), Errors.TO003.code
+        )
+
+        if(!sender.get().customerStatus()) throw BadRequestException(
+            Errors.TO005.message.format(transaction.envia), Errors.TO005.code
         )
 
         if (!sender.get().ePF()) return throw BadRequestException(
             Errors.TO002.message.format(transaction.envia), Errors.TO002.code
         )
-
+        
         return sender.get()
     }
 
-    fun merchantValidate(transaction: TransactionModel): CustomerModel {
+    fun recipientValidate(transaction: TransactionModel): CustomerModel {
 
-        val merchantCheck: Boolean = repository.existsById(transaction.recebe)
-        val merchant = repository.findById(transaction.recebe)
+        val recipientCheck: Boolean = repository.existsById(transaction.recebe)
+        val recipient = repository.findById(transaction.recebe)
 
-        if (!merchantCheck) throw BadRequestException(
-            Errors.TO001.message.format(transaction.envia), Errors.TO001.code
+        if (!recipientCheck) throw BadRequestException(
+            Errors.TO003.message.format(transaction.recebe), Errors.TO003.code
         )
 
-        if (!merchant.get().ePJ()) throw BadRequestException(
-            Errors.TO003.message.format(transaction.envia), Errors.TO003.code
-        )
-
-        return merchant.get()
+        return recipient.get()
     }
 
     fun checkBalance(valor: Float, senderBalance: Float): Boolean {

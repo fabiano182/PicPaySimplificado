@@ -10,7 +10,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import jakarta.persistence.EnumType
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -154,6 +153,42 @@ class CustomerServiceTest() {
     }
 
     @Test
+    fun `should delete customers`() {
+        val id = Random().nextInt()
+        val fakeCustomer = buildCustomer(id = id)
+
+        //given
+        every { repository.existsById(id) } returns true
+        every { repository.findById(id).get() } returns fakeCustomer
+        every { repository.save(fakeCustomer) } returns fakeCustomer
+
+        //when
+        customerService.delete(id)
+        //then
+        assertEquals(fakeCustomer.status, CustomerStatus.INATIVO)
+        verify(exactly = 1) { repository.existsById(id) }
+        verify(exactly = 1) { repository.findById(id) }
+        verify(exactly = 1) { repository.save(fakeCustomer) }
+
+    }
+
+    @Test
+    fun `should return the specific exception delete customers`() {
+        val id = Random().nextInt()
+
+        //given
+        every { repository.existsById(id) } returns false
+        //when
+        val error = assertThrows<BadRequestException> { customerService.delete(id) }
+        //then
+
+        assertEquals("Não foi possivel deletar o customer [${id}].", error.message)
+        assertEquals("CO-003", error.errorCode)
+
+        verify(exactly = 1) { repository.existsById(id) }
+    }
+
+    @Test
     fun `should return true when email available`() {
         val email = "${Random().nextInt().toString()}@email.com"
 
@@ -177,6 +212,29 @@ class CustomerServiceTest() {
         verify(exactly = 1) { repository.existsByEmail(email) }
     }
 
+    @Test
+    fun `should return true when registroGoverno available`() {
+        val registroGoverno: String = (1..11).joinToString("") { (0..9).random().toString() }
+
+        every { repository.existsByRegistroGoverno(registroGoverno) } returns false
+
+        val registroGovernoAvailable = customerService.registroGovernoAvailable(registroGoverno)
+
+        assertTrue(registroGovernoAvailable)
+        verify(exactly = 1) { repository.existsByRegistroGoverno(registroGoverno) }
+    }
+
+    @Test
+    fun `should return true when registroGoverno unavailable`() {
+        val registroGoverno: String = (1..11).joinToString("") { (0..9).random().toString() }
+
+        every { repository.existsByRegistroGoverno(registroGoverno) } returns true
+
+        val registroGovernoAvailable = customerService.registroGovernoAvailable(registroGoverno)
+
+        assertFalse(registroGovernoAvailable)
+        verify(exactly = 1) { repository.existsByRegistroGoverno(registroGoverno) }
+    }
 
     fun buildCustomer(
         id: Int? = null,

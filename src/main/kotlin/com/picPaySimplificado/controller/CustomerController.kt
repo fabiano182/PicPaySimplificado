@@ -25,7 +25,7 @@ class CustomerController(
     }
 
     @GetMapping
-    @Cacheable("CustomerList")
+//    @Cacheable("CustomerList")
     fun getAll() : List<CustomerModel> {
         return service.getAll()
     }
@@ -37,14 +37,14 @@ class CustomerController(
 
     @PostMapping("/cadastrar")
     @ResponseStatus(HttpStatus.CREATED)
-    @CacheEvict(value = ["CustomerList"])
+//    @CacheEvict(value = ["CustomerList"])
     fun create(@RequestBody @Valid customer: PostCustomerRequest) {
         service.create(customer.toCustomerModel())
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(value = ["CustomerList"])
+//    @CacheEvict(value = ["CustomerList"])
     fun update(@PathVariable id: Int, @RequestBody putCustomerRequest: PutCustomerRequest){
         val customer = CustomerModel(
             id = id,
@@ -61,7 +61,7 @@ class CustomerController(
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(value = ["CustomerList"])
+//    @CacheEvict(value = ["CustomerList"])
     fun delete(@PathVariable id: Int) {
         service.delete(id)
     }
