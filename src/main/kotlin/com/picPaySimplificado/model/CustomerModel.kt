@@ -26,4 +26,6 @@ data class CustomerModel(
 
     fun ePF() = this.registroGoverno.length == 11
 
+    fun customerStatus() = this.status == CustomerStatus.ATIVO
+
 }
