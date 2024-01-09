@@ -28,6 +28,9 @@ class CustomerServiceTest() {
     @InjectMockKs
     lateinit var customerService: CustomerService
 
+    @InjectMockKs
+    lateinit var transactionServiceTest: TransactionServiceTest
+
     @Test
     fun `should return all customers`() {
         val fakeCustomers = listOf(buildCustomer())
@@ -59,7 +62,7 @@ class CustomerServiceTest() {
     @Test
     fun `should create customers cnpj`() {
         val id = Random().nextInt()
-        val fakeMerchant = buildCustomer(id = id + 123)
+        val fakeMerchant = buildCustomer(registroGoverno = "12345678910111")
 
         //given
         every { repository.save(fakeMerchant) } returns fakeMerchant
@@ -234,6 +237,126 @@ class CustomerServiceTest() {
 
         assertFalse(registroGovernoAvailable)
         verify(exactly = 1) { repository.existsByRegistroGoverno(registroGoverno) }
+    }
+
+    //TRANSFERENCE
+    @Test
+    fun `should validate sender and return sender`() {
+        val id = Random().nextInt()
+        val sender = buildCustomer(id = id)
+        val transaction = transactionServiceTest.buildTransaction(envia = id)
+
+        every { repository.existsById(id) } returns true
+        every { repository.findById(id).get() } returns sender
+
+        val compareSender = customerService.senderValidate(transaction)
+
+        assertEquals(sender, compareSender)
+        verify { repository.existsById(id) }
+        verify { repository.findById(id) }
+    }
+
+    @Test
+    fun `should return first exception in senderValidate`(){
+        val id = Random().nextInt()
+        val sender = buildCustomer(id = id)
+        val transaction = transactionServiceTest.buildTransaction(envia = id)
+
+        every { repository.existsById(id) } returns false
+        every { repository.findById(id).get() } returns sender
+
+        val error = assertThrows<BadRequestException> { customerService.senderValidate(transaction) }
+
+        assertEquals("Customer [${id}] não existe", error.message)
+        assertEquals("TO-003", error.errorCode)
+        verify(exactly = 1) { repository.existsById(id) }
+    }
+
+    @Test
+    fun `should return second exception in senderValidate`(){
+        val id = Random().nextInt()
+        val sender = buildCustomer(id = id, status = CustomerStatus.INATIVO)
+        val transaction = transactionServiceTest.buildTransaction(envia = id)
+
+        every { repository.existsById(id) } returns true
+        every { repository.findById(id).get() } returns sender
+
+        val error = assertThrows<BadRequestException> { customerService.senderValidate(transaction) }
+
+        assertEquals("Impossivel prosseguir com a operação. Customer [${id}] está inativo ", error.message)
+        assertEquals("TO-005", error.errorCode)
+        verify(exactly = 1) { repository.existsById(id) }
+    }
+
+    @Test
+    fun `should return third exception in senderValidate`(){
+        val id = Random().nextInt()
+        val cnpjGenerator = (1..14).joinToString("") { (0..9).random().toString() }
+        val sender = buildCustomer(id = id, registroGoverno = cnpjGenerator)
+        val transaction = transactionServiceTest.buildTransaction(envia = id)
+
+        every { repository.existsById(id) } returns true
+        every { repository.findById(id).get() } returns sender
+
+        val error = assertThrows<BadRequestException> { customerService.senderValidate(transaction) }
+
+        assertEquals("Customer [${id}] não é cliente.", error.message)
+        assertEquals("TO-002", error.errorCode)
+        verify(exactly = 1) { repository.existsById(id) }
+        verify(exactly = 1) { repository.findById(id) }
+    }
+
+    @Test
+    fun `should validate recipient and return sender`() {
+        val id = Random().nextInt()
+        val sender = buildCustomer(id = id)
+        val transaction = transactionServiceTest.buildTransaction(recebe = id)
+
+        every { repository.existsById(id) } returns true
+        every { repository.findById(id).get() } returns sender
+
+        val compareSender = customerService.recipientValidate(transaction)
+
+        assertEquals(sender, compareSender)
+        verify { repository.existsById(id) }
+        verify { repository.findById(id) }
+    }
+
+    @Test
+    fun `should return exception in recipientValidate`(){
+        val id = Random().nextInt()
+        val sender = buildCustomer(id = id)
+        val transaction = transactionServiceTest.buildTransaction(recebe = id)
+
+        every { repository.existsById(id) } returns false
+        every { repository.findById(id).get() } returns sender
+
+        val error = assertThrows<BadRequestException> { customerService.recipientValidate(transaction) }
+
+        assertEquals("Customer [${id}] não existe", error.message)
+        assertEquals("TO-003", error.errorCode)
+        verify(exactly = 1) { repository.existsById(id) }
+    }
+
+    @Test
+    fun `should validate the sender balance for transference`(){
+        val sender = buildCustomer()
+        val transaction = transactionServiceTest.buildTransaction().valor
+
+        val checkBalanceOperation = customerService.checkBalance(transaction, sender.saldo)
+
+        assertTrue(checkBalanceOperation)
+    }
+
+    @Test
+    fun `should return exception sender balance for transference`(){
+        val sender = buildCustomer(saldo = 10.0f)
+        val transaction = transactionServiceTest.buildTransaction().valor
+
+        val error = assertThrows<BadRequestException> { customerService.checkBalance(transaction, sender.saldo) }
+
+        assertEquals("Saldo insuficiente para efetuar esta operação", error.message)
+        assertEquals("TO-004", error.errorCode)
     }
 
     fun buildCustomer(

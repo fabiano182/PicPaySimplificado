@@ -75,7 +75,7 @@ class CustomerService(private val repository: CustomerRepository) {
         val senderCheck: Boolean = repository.existsById(transaction.envia)
         val sender = repository.findById(transaction.envia)
 
-        if (!senderCheck) return throw BadRequestException(
+        if (!senderCheck) throw BadRequestException(
             Errors.TO003.message.format(transaction.envia), Errors.TO003.code
         )
 
@@ -83,10 +83,10 @@ class CustomerService(private val repository: CustomerRepository) {
             Errors.TO005.message.format(transaction.envia), Errors.TO005.code
         )
 
-        if (!sender.get().ePF()) return throw BadRequestException(
+        if (!sender.get().ePF()) throw BadRequestException(
             Errors.TO002.message.format(transaction.envia), Errors.TO002.code
         )
-        
+
         return sender.get()
     }
 
@@ -104,7 +104,7 @@ class CustomerService(private val repository: CustomerRepository) {
 
     fun checkBalance(valor: Float, senderBalance: Float): Boolean {
         if (valor <= senderBalance) return true
-        return throw BadRequestException(
+        throw BadRequestException(
             Errors.TO004.message, Errors.TO004.code
         )
     }

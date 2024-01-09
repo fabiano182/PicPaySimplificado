@@ -12,10 +12,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
+import java.time.LocalDate
 import java.util.*
 
 
@@ -41,6 +43,8 @@ class TransactionServiceTest() {
     @InjectMockKs
     lateinit var transactionService: TransactionService
 
+    @InjectMockKs
+    lateinit var customerServiceTest: CustomerServiceTest
     @Test
     fun `should return all transactions`() {
         val fakeTransaction = listOf(buildTransaction())
@@ -82,6 +86,50 @@ class TransactionServiceTest() {
     }
     //Transference
 
+//    @Test
+//    fun `should make a transference`(){
+//        val senderId = Random().nextInt()
+//        val sender = customerServiceTest.buildCustomer(id = senderId)
+//        val subtractValueSender = sender
+//
+//        val recipientId = Random().nextInt()
+//        val recipient = customerServiceTest.buildCustomer(id = recipientId)
+//        val addRecipientValue = recipient
+//
+//        val transaction = buildTransaction(envia = senderId, recebe = recipientId)
+//
+//        val dataTransacao: LocalDate? = java.time.LocalDate.now()
+//
+//        val postHistory = TransactionModel(
+//            envia = transaction.envia,
+//            recebe = transaction.recebe,
+//            valor = transaction.valor,
+//            date = dataTransacao
+//        )
+//
+//        every { customerService.senderValidate(transaction) } returns sender
+//        every { customerService.recipientValidate(transaction) } returns recipient
+////        every { customerService.checkBalance(sender.saldo, transaction.valor) } returns true
+//        every { repository.save(postHistory) } returns postHistory
+//        every { postConfirmationTransactionByEmail.sendConfirmationForEmailApi(transaction) } returns true
+//        every { customerRepository.save(subtractValueSender) } returns subtractValueSender
+//        every { customerRepository.save(addRecipientValue) } returns addRecipientValue
+//
+//        transactionService.transference(transaction)
+////        val balanceTestSender = customerService.checkBalance(sender.saldo, transaction.valor)
+////
+////        assertTrue(balanceTestSender)
+//
+//        verify(exactly = 1) { customerService.senderValidate(transaction) }
+//        verify(exactly = 1) { customerService.recipientValidate(transaction) }
+//        verify(exactly = 1) { customerService.checkBalance(sender.saldo, transaction.valor) }
+//        verify(exactly = 1) { repository.save(postHistory) }
+//        verify(exactly = 1) { postConfirmationTransactionByEmail.sendConfirmationForEmailApi(transaction) }
+//        verify(exactly = 1) { customerRepository.save(subtractValueSender) }
+//        verify(exactly = 1) { customerRepository.save(addRecipientValue) }
+//
+//    }
+
     fun buildTransaction(
         id: Int? = null,
         envia: Int = Random().nextInt(),
@@ -91,7 +139,8 @@ class TransactionServiceTest() {
         ID = id,
         envia = envia,
         recebe = recebe,
-        valor = valor
+        valor = valor,
+        date = null
     )
 
 }
