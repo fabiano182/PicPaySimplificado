@@ -3,6 +3,8 @@ package com.picPaySimplificado.service
 import com.picPaySimplificado.enums.CustomerStatus
 import com.picPaySimplificado.exception.BadRequestException
 import com.picPaySimplificado.exception.NotFoundException
+import com.picPaySimplificado.helper.buildCustomer
+import com.picPaySimplificado.helper.buildTransaction
 import com.picPaySimplificado.model.CustomerModel
 import com.picPaySimplificado.repository.CustomerRepository
 import io.mockk.every
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
 
@@ -21,6 +24,7 @@ import java.util.*
 @ExtendWith(MockKExtension::class)
 @SpringBootTest
 class CustomerServiceTest() {
+
 
     @MockK
     private lateinit var repository: CustomerRepository
@@ -244,7 +248,7 @@ class CustomerServiceTest() {
     fun `should validate sender and return sender`() {
         val id = Random().nextInt()
         val sender = buildCustomer(id = id)
-        val transaction = transactionServiceTest.buildTransaction(envia = id)
+        val transaction = buildTransaction(envia = id)
 
         every { repository.existsById(id) } returns true
         every { repository.findById(id).get() } returns sender
@@ -260,7 +264,7 @@ class CustomerServiceTest() {
     fun `should return first exception in senderValidate`(){
         val id = Random().nextInt()
         val sender = buildCustomer(id = id)
-        val transaction = transactionServiceTest.buildTransaction(envia = id)
+        val transaction = buildTransaction(envia = id)
 
         every { repository.existsById(id) } returns false
         every { repository.findById(id).get() } returns sender
@@ -276,7 +280,7 @@ class CustomerServiceTest() {
     fun `should return second exception in senderValidate`(){
         val id = Random().nextInt()
         val sender = buildCustomer(id = id, status = CustomerStatus.INATIVO)
-        val transaction = transactionServiceTest.buildTransaction(envia = id)
+        val transaction = buildTransaction(envia = id)
 
         every { repository.existsById(id) } returns true
         every { repository.findById(id).get() } returns sender
@@ -293,7 +297,7 @@ class CustomerServiceTest() {
         val id = Random().nextInt()
         val cnpjGenerator = (1..14).joinToString("") { (0..9).random().toString() }
         val sender = buildCustomer(id = id, registroGoverno = cnpjGenerator)
-        val transaction = transactionServiceTest.buildTransaction(envia = id)
+        val transaction = buildTransaction(envia = id)
 
         every { repository.existsById(id) } returns true
         every { repository.findById(id).get() } returns sender
@@ -310,7 +314,7 @@ class CustomerServiceTest() {
     fun `should validate recipient and return sender`() {
         val id = Random().nextInt()
         val sender = buildCustomer(id = id)
-        val transaction = transactionServiceTest.buildTransaction(recebe = id)
+        val transaction = buildTransaction(recebe = id)
 
         every { repository.existsById(id) } returns true
         every { repository.findById(id).get() } returns sender
@@ -326,7 +330,7 @@ class CustomerServiceTest() {
     fun `should return exception in recipientValidate`(){
         val id = Random().nextInt()
         val sender = buildCustomer(id = id)
-        val transaction = transactionServiceTest.buildTransaction(recebe = id)
+        val transaction = buildTransaction(recebe = id)
 
         every { repository.existsById(id) } returns false
         every { repository.findById(id).get() } returns sender
@@ -341,7 +345,7 @@ class CustomerServiceTest() {
     @Test
     fun `should validate the sender balance for transference`(){
         val sender = buildCustomer()
-        val transaction = transactionServiceTest.buildTransaction().valor
+        val transaction = buildTransaction().valor
 
         val checkBalanceOperation = customerService.checkBalance(transaction, sender.saldo)
 
@@ -351,7 +355,7 @@ class CustomerServiceTest() {
     @Test
     fun `should return exception sender balance for transference`(){
         val sender = buildCustomer(saldo = 10.0f)
-        val transaction = transactionServiceTest.buildTransaction().valor
+        val transaction = buildTransaction().valor
 
         val error = assertThrows<BadRequestException> { customerService.checkBalance(transaction, sender.saldo) }
 
@@ -359,21 +363,5 @@ class CustomerServiceTest() {
         assertEquals("TO-004", error.errorCode)
     }
 
-    fun buildCustomer(
-        id: Int? = null,
-        nomeCompleto: String = "customer name",
-        registroGoverno: String = (1..11).joinToString("") { (0..9).random().toString() },
-        email: String = "${UUID.randomUUID()}@email.com",
-        senha: String = "password",
-        saldo: Float = 500.0F,
-        status: CustomerStatus = CustomerStatus.ATIVO
-    ): CustomerModel = CustomerModel(
-        id = id,
-        nomeCompleto = nomeCompleto,
-        registroGoverno = registroGoverno,
-        email = email,
-        senha = senha,
-        saldo = saldo,
-        status = status
-    )
+
 }

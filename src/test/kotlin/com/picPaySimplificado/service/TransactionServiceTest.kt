@@ -3,6 +3,7 @@ package com.picPaySimplificado.service
 import com.picPaySimplificado.client.ConfirmTransferApproval
 import com.picPaySimplificado.client.PostConfirmationTransactionByEmail
 import com.picPaySimplificado.exception.NotFoundException
+import com.picPaySimplificado.helper.buildTransaction
 import com.picPaySimplificado.model.TransactionModel
 import com.picPaySimplificado.repository.CustomerRepository
 import com.picPaySimplificado.repository.TransactionRepository
@@ -98,49 +99,36 @@ class TransactionServiceTest() {
 //
 //        val transaction = buildTransaction(envia = senderId, recebe = recipientId)
 //
-//        val dataTransacao: LocalDate? = java.time.LocalDate.now()
 //
-//        val postHistory = TransactionModel(
-//            envia = transaction.envia,
-//            recebe = transaction.recebe,
-//            valor = transaction.valor,
-//            date = dataTransacao
-//        )
+//        //senderValidateMock
+//        every { repository.existsById(transaction.envia) } returns true
+//        every { repository.findById(transaction.envia).get() } returns sender
 //
-//        every { customerService.senderValidate(transaction) } returns sender
-//        every { customerService.recipientValidate(transaction) } returns recipient
-////        every { customerService.checkBalance(sender.saldo, transaction.valor) } returns true
-//        every { repository.save(postHistory) } returns postHistory
+//        //recipientValidate
+//        every { repository.existsById(transaction.recebe) } returns true
+//        every { repository.findById(transaction.recebe).get() } returns recipient
+//
+//
+//        every { customerService.checkBalance(sender.saldo, transaction.valor) } returns true
+//        every { repository.save(any()) } returns transaction
 //        every { postConfirmationTransactionByEmail.sendConfirmationForEmailApi(transaction) } returns true
 //        every { customerRepository.save(subtractValueSender) } returns subtractValueSender
 //        every { customerRepository.save(addRecipientValue) } returns addRecipientValue
 //
 //        transactionService.transference(transaction)
 ////        val balanceTestSender = customerService.checkBalance(sender.saldo, transaction.valor)
-////
 ////        assertTrue(balanceTestSender)
 //
 //        verify(exactly = 1) { customerService.senderValidate(transaction) }
 //        verify(exactly = 1) { customerService.recipientValidate(transaction) }
 //        verify(exactly = 1) { customerService.checkBalance(sender.saldo, transaction.valor) }
-//        verify(exactly = 1) { repository.save(postHistory) }
+//        verify(exactly = 1) { repository.save(any()) }
 //        verify(exactly = 1) { postConfirmationTransactionByEmail.sendConfirmationForEmailApi(transaction) }
 //        verify(exactly = 1) { customerRepository.save(subtractValueSender) }
 //        verify(exactly = 1) { customerRepository.save(addRecipientValue) }
 //
 //    }
 
-    fun buildTransaction(
-        id: Int? = null,
-        envia: Int = Random().nextInt(),
-        recebe: Int = Random().nextInt(),
-        valor: Float = 50.0F
-    ) = TransactionModel(
-        ID = id,
-        envia = envia,
-        recebe = recebe,
-        valor = valor,
-        date = null
-    )
+
 
 }
