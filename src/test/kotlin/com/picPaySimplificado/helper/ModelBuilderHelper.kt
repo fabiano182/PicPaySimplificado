@@ -31,7 +31,7 @@ fun buildTransaction(
     recebe: Int = Random().nextInt(),
     valor: Float = 50.0F
 ) = TransactionModel(
-    ID = id,
+    id = id,
     envia = envia,
     recebe = recebe,
     valor = valor,
