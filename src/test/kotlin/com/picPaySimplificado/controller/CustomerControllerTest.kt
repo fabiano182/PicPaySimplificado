@@ -2,6 +2,7 @@ package com.picPaySimplificado.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.picPaySimplificado.controller.request.PostCustomerRequest
+import com.picPaySimplificado.enums.CustomerStatus
 import com.picPaySimplificado.helper.buildCustomer
 import com.picPaySimplificado.repository.CustomerRepository
 import org.junit.jupiter.api.AfterEach
@@ -101,4 +102,39 @@ class CustomerControllerTest{
         assertEquals(1, customer.size)
     }
 
+    @Test
+    fun `should update customer`(){
+        val fakeCustomer = customerRepository.save(buildCustomer())
+        val request = PostCustomerRequest(
+            "fake name",
+            "12345678910",
+            "fakecustomer@gmail.com",
+            "123455",
+            500.0F
+        )
+        mockMvc.perform(put("/customer/${fakeCustomer.id}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isNoContent)
+
+        val customer = customerRepository.findAll().toList()
+        assertEquals(request.nomeCompleto, customer[0].nomeCompleto)
+        assertEquals(request.registroGoverno, customer[0].registroGoverno)
+        assertEquals(request.email, customer[0].email)
+        assertEquals(request.senha, customer[0].senha)
+        assertEquals(request.saldo, customer[0].saldo)
+
+    }
+
+    @Test
+    fun `should inactive customer status`() {
+        val fakeCustomer = customerRepository.save(buildCustomer())
+        mockMvc.perform(
+            delete("/customer/${fakeCustomer.id}")
+        )
+            .andExpect(status().isNoContent)
+
+        val customer = customerRepository.findAll().toList()
+        assertEquals(CustomerStatus.INATIVO, customer[0].status)
+    }
 }
