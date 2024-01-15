@@ -32,11 +32,6 @@ dependencies {
 	//Cache
 	implementation("org.springframework.boot:spring-boot-starter-cache:3.2.0")
 
-	// Swagger
-	implementation("io.springfox:springfox-swagger2:2.9.2")
-	implementation("io.springfox:springfox-swagger-ui:2.9.2")
-	implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
-
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 	runtimeOnly("com.mysql:mysql-connector-j")

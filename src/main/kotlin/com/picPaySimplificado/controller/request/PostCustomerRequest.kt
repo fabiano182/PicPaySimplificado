@@ -24,5 +24,4 @@ data class PostCustomerRequest(
 
     @field:NotNull(message = "Saldo não pode ser nulo")
     var saldo: Float
-) {
-}
+)

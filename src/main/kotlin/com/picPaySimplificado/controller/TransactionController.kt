@@ -3,7 +3,7 @@ package com.picPaySimplificado.controller
 import com.picPaySimplificado.model.TransactionModel
 import com.picPaySimplificado.controller.request.TransactionRequest
 import com.picPaySimplificado.service.TransactionService
-import extensions.extensions.toTransactionModel
+import com.picPaySimplificado.extensions.toTransactionModel
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -15,13 +15,11 @@ import org.springframework.web.bind.annotation.*
 class TransactionController(val transactionService: TransactionService) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-//    @CacheEvict(value = ["TransactionList"])
     fun transference(@RequestBody @Valid transaction: TransactionRequest) {
         transactionService.transference(transaction.toTransactionModel(transaction))
     }
 
     @GetMapping
-//    @Cacheable("TransactionList")
     fun getAll(): List<TransactionModel> {
         return transactionService.getAll()
     }

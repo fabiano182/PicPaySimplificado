@@ -5,7 +5,6 @@ import com.picPaySimplificado.exception.BadRequestException
 import com.picPaySimplificado.exception.NotFoundException
 import com.picPaySimplificado.helper.buildCustomer
 import com.picPaySimplificado.helper.buildTransaction
-import com.picPaySimplificado.model.CustomerModel
 import com.picPaySimplificado.repository.CustomerRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -16,14 +15,13 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
 
 
 @ExtendWith(MockKExtension::class)
 @SpringBootTest
-class CustomerServiceTest() {
+class CustomerServiceTest {
 
 
     @MockK
@@ -31,9 +29,6 @@ class CustomerServiceTest() {
 
     @InjectMockKs
     lateinit var customerService: CustomerService
-
-    @InjectMockKs
-    lateinit var transactionServiceTest: TransactionServiceTest
 
     @Test
     fun `should return all customers`() {
@@ -65,7 +60,6 @@ class CustomerServiceTest() {
 
     @Test
     fun `should create customers cnpj`() {
-        val id = Random().nextInt()
         val fakeMerchant = buildCustomer(registroGoverno = "12345678910111")
 
         //given
@@ -197,7 +191,7 @@ class CustomerServiceTest() {
 
     @Test
     fun `should return true when email available`() {
-        val email = "${Random().nextInt().toString()}@email.com"
+        val email = "${Random().nextInt()}@email.com"
 
         every { repository.existsByEmail(email) } returns false
 
@@ -209,7 +203,7 @@ class CustomerServiceTest() {
 
     @Test
     fun `should return false when email unavailable`() {
-        val email = "${Random().nextInt().toString()}@email.com"
+        val email = "${Random().nextInt()}@email.com"
 
         every { repository.existsByEmail(email) } returns true
 

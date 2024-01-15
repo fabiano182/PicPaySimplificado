@@ -1,6 +1,6 @@
 package com.picPaySimplificado.controller
 
-import extensions.extensions.toCustomerModel
+import com.picPaySimplificado.extensions.toCustomerModel
 import com.picPaySimplificado.model.CustomerModel
 import org.springframework.web.bind.annotation.*
 import com.picPaySimplificado.controller.request.PostCustomerRequest
@@ -9,8 +9,6 @@ import com.picPaySimplificado.enums.CustomerStatus
 import com.picPaySimplificado.service.CustomerService
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
-import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.http.HttpStatus
 
 @RestController
@@ -25,7 +23,6 @@ class CustomerController(
     }
 
     @GetMapping
-//    @Cacheable("CustomerList")
     fun getAll() : List<CustomerModel> {
         return service.getAll()
     }
@@ -37,14 +34,12 @@ class CustomerController(
 
     @PostMapping("/cadastrar")
     @ResponseStatus(HttpStatus.CREATED)
-//    @CacheEvict(value = ["CustomerList"])
     fun create(@RequestBody @Valid customer: PostCustomerRequest) {
         service.create(customer.toCustomerModel())
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @CacheEvict(value = ["CustomerList"])
     fun update(@PathVariable id: Int, @RequestBody putCustomerRequest: PutCustomerRequest){
         val customer = CustomerModel(
             id = id,
@@ -61,7 +56,6 @@ class CustomerController(
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @CacheEvict(value = ["CustomerList"])
     fun delete(@PathVariable id: Int) {
         service.delete(id)
     }

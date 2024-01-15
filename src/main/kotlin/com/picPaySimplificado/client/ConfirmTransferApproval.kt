@@ -11,12 +11,12 @@ class ConfirmTransferApproval {
     fun getValidateTransferApproval(): Boolean {
         val restTemplate = RestTemplate()
 
-        val parametroTransacao = restTemplate.getForObject(
+        val transferenceParam = restTemplate.getForObject(
             "https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc", ApprovalTransactionModel::class.java
         )
 
-        if (parametroTransacao != null)
-            when (parametroTransacao.message) {
+        if (transferenceParam != null)
+            when (transferenceParam.message) {
                 "Autorizado" -> return true
                 else -> throw AcceptButDenied(
                     Errors.OP002.message,
