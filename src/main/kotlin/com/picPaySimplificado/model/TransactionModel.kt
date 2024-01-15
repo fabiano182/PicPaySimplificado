@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 @Entity(name = "transaction_history")
 data class TransactionModel(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var ID: Int? = null,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Int? = null,
 
     @Column var envia: Int,
 

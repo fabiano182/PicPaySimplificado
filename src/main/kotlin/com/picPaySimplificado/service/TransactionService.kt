@@ -32,7 +32,7 @@ class TransactionService(
         val subtractValueSender = getSenderData
         val addRecipientValue = getRecipientData
 
-        val dataTransacao: LocalDate? = java.time.LocalDate.now()
+        val dataTransacao: LocalDate? = LocalDate.now()
         val postHistory = TransactionModel(
             envia = transaction.envia,
             recebe = transaction.recebe,
