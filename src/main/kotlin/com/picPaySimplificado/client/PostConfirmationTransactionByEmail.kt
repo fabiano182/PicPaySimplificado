@@ -10,12 +10,12 @@ class PostConfirmationTransactionByEmail {
     fun sendConfirmationForEmailApi(transactionModel: TransactionModel): Boolean {
         val restTemplate = RestTemplate()
 
-        val parametroTransacao: ResponseEntity<ConfirmSendModel> = restTemplate.postForEntity(
+        val transferenceParam: ResponseEntity<ConfirmSendModel> = restTemplate.postForEntity(
             "https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6",
             transactionModel,
             ConfirmSendModel::class.java
         )
-        if (parametroTransacao != null) {
+        if (transferenceParam != null) {
             return true
         }
         return false

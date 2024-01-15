@@ -22,8 +22,6 @@ data class CustomerModel(
     @Column @Enumerated(EnumType.STRING) var status: CustomerStatus
 ) {
 
-    fun ePJ() = this.registroGoverno.length == 14
-
     fun ePF() = this.registroGoverno.length == 11
 
     fun customerStatus() = this.status == CustomerStatus.ATIVO

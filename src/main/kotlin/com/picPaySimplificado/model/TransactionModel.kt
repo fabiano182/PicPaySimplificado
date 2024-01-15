@@ -18,5 +18,4 @@ data class TransactionModel(
     @Column var valor: Float,
 
     @Column(name = "transaction_date") var date: LocalDate? = null
-) {
-}
+)
