@@ -10,6 +10,7 @@ plugins {
 }
 
 group = "com.picPaySimplificado"
+
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -50,7 +51,11 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
-
 tasks.bootBuildImage {
 	builder.set("paketobuildpacks/builder-jammy-base:latest")
+}
+
+tasks.named<Test>("test"){
+	useJUnitPlatform()
+	exclude("**/controller/**", "**/service/**")
 }

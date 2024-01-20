@@ -1,0 +1,31 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Password123#@!
+      MYSQL_DATABASE: testepicpay
+
+    ports:
+      - "3307:3306"
+    networks:
+      - allapps_default
+    volumes:
+      - ./.mysql-data/db:/var/lib/mysql
+
+  backend:
+    depends_on:
+      - db
+    build: .
+    ports:
+      - "3001:3001"
+    networks:
+      - allapps_default
+
+networks:
+  allapps_default:
+    driver: bridge
+    external: true

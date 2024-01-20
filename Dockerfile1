@@ -1,0 +1,43 @@
+FROM ubuntu:22.04
+
+WORKDIR /app
+
+COPY . .
+
+RUN set -e \
+    && apt-get update \
+    && apt-get install --yes --no-install-recommends \
+        unzip \
+        wget \
+        bzr \
+        git \
+        git-lfs \
+        mercurial \
+        openssh-client \
+        subversion \
+        openjdk-17-jdk \
+    && rm -rf /var/lib/apt/lists/* || true \
+
+
+
+RUN set -xe  \
+    && echo "Downloading Gradle" \
+    && wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-8.5-bin.zip" \
+    \
+    && echo "Checking Gradle download hash" \
+    && echo "9d926787066a081739e8200858338b4a69e837c3a821a33aca9db09dd4a41026 *gradle.zip" | sha256sum --check - \
+    \
+    && echo "Installing Gradle" \
+    && unzip gradle.zip \
+    && rm gradle.zip \
+    && mv "gradle-8.5" "/opt/gradle" \
+    && ln --symbolic "/opt/gradle/bin/gradle" /usr/bin/gradle
+
+ENV PATH="/app/gradle/bin:${PATH}"
+
+RUN ./gradlew build --refresh-dependencies
+
+
+EXPOSE 3001
+
+CMD ["./gradlew", "bootRun"]
