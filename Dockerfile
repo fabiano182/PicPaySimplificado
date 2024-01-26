@@ -1,13 +1,19 @@
-FROM eclipse-temurin:17
+FROM gradle:8.5-jdk17 AS build
 
-WORKDIR /app
+COPY --chown=gradle:gradle . /home/gradle/src
 
-COPY . .
+WORKDIR /home/gradle/src
 
-RUN ./gradlew dependencies
+RUN gradle build --no-daemon
 
-RUN ./gradlew build
+FROM openjdk:17-jdk-slim
+
+RUN mkdir /teste
+RUN mkdir /app
+
+COPY . /teste
+COPY --from=build /home/gradle/src/build/libs /app/
 
 EXPOSE 3001
 
-CMD ["./gradlew", "bootRun"]
+CMD ["java", "-jar", "/app/picPaySimplificado-0.0.1-SNAPSHOT.jar"]
