@@ -3,29 +3,36 @@ version: '3.1'
 services:
 
   backend:
-    depends_on:
-      - mysql57
-    build: .
+    image: picpaysimplificado-backend:latest
+    container_name: backend
+    restart: always
     ports:
       - "3001:3001"
+    depends_on:
+      mysql57:
+        condition: service_healthy
     networks:
       - bco_default
-    restart: always
 
   mysql57:
     image: mysql:5.7
     container_name: mysql57
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: 'Password123#@!'
+      MYSQL_DATABASE: 'testepicpay'
+    ports:
+      - '3306:3306'
     networks:
       - bco_default
-    ports:
-      - "0.0.0.0:3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: Password123#@!
-      MYSQL_DATABASE: testepicpay
-    restart: always
     volumes:
       - ./.mysql-data/db:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD
+      start_period: 10s
+      interval: 5s
+      timeout: 30s
+      retries: 10
 
 networks:
   bco_default:
-    external: true
